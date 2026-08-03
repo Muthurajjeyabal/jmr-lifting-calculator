@@ -4,6 +4,21 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>JMR Lifting Calculator — Lifting &amp; Rigging Engineering Suite</title>
+<meta name="description" content="Professional offline lifting, rigging, steel and offshore engineering calculator suite for crane and rigging engineers — sling tension, crane utilization, padeye checks, and 20+ more tools.">
+
+<!-- Open Graph -->
+<meta property="og:title" content="JMR Lifting Calculator — Lifting &amp; Rigging Engineering Suite">
+<meta property="og:description" content="Professional offline lifting, rigging, steel and offshore engineering calculator suite for crane and rigging engineers. Works fully offline, no internet required.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://muthurajjeyabal.github.io/jmr-lifting-calculator/icons/icon-512.png">
+<meta property="og:url" content="https://muthurajjeyabal.github.io/jmr-lifting-calculator/">
+<meta property="og:site_name" content="JMR Lifting Calculator">
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="JMR Lifting Calculator — Lifting &amp; Rigging Engineering Suite">
+<meta name="twitter:description" content="Professional offline lifting, rigging, steel and offshore engineering calculator suite for crane and rigging engineers.">
+<meta name="twitter:image" content="https://muthurajjeyabal.github.io/jmr-lifting-calculator/icons/icon-512.png">
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#12151A">
 <meta name="mobile-web-app-capable" content="yes">
@@ -538,6 +553,12 @@
     background:transparent; border:none; color:var(--red); font-size:16px; cursor:pointer; padding:4px 6px;
   }
 
+  .app-footer{
+    padding:7px 16px; text-align:center;
+    font-size:9.5px; line-height:1.4; color:var(--muted);
+    background:rgba(10,12,15,0.6); border-top:1px solid var(--line);
+    flex-shrink:0;
+  }
   .navbar{
     position:sticky; bottom:0;
     background:rgba(19,22,27,0.97);
@@ -588,7 +609,7 @@
         <div class="sub" id="brandSub"></div>
       </div>
       <div class="lang-selector">
-        <button id="langBtn" class="lang-btn" onclick="toggleLangMenu()">🌐 <span id="langBtnLabel"></span> ▾</button>
+        <button id="langBtn" class="lang-btn" onclick="toggleLangMenu()" aria-label="Change language" aria-haspopup="true">🌐 <span id="langBtnLabel"></span> ▾</button>
         <div id="langMenu" class="lang-menu hidden"></div>
       </div>
     </div>
@@ -597,13 +618,15 @@
 
   <div class="content" id="content"></div>
 
+  <div class="app-footer" id="appFooter" role="contentinfo"></div>
+
   <div class="navbar" id="navbar"></div>
 
   <div class="calc-modal-overlay hidden" id="calcModalOverlay" onclick="closeCalcModalOnBackdrop(event)">
     <div class="calc-modal-box">
       <div class="calc-modal-header">
         <h3 style="margin:0;">🔬 <span id="calcModalTitle"></span></h3>
-        <button class="calc-modal-close" onclick="closeCalcModal()">✕</button>
+        <button class="calc-modal-close" onclick="closeCalcModal()" aria-label="Close scientific calculator">✕</button>
       </div>
       <div id="calcWidget"></div>
     </div>
@@ -613,7 +636,7 @@
     <div class="drawer-panel">
       <div class="drawer-header">
         <div class="drawer-title">▦ <span id="drawerTitleText"></span></div>
-        <button class="drawer-close" onclick="closeDrawer()">✕</button>
+        <button class="drawer-close" onclick="closeDrawer()" aria-label="Close calculators menu">✕</button>
       </div>
       <div class="drawer-body" id="drawerBody"></div>
     </div>
@@ -626,7 +649,7 @@ const ICONS = {
   flag: `<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3v18M5 4h11l-2.5 4L16 12H5"/></svg>`,
   aiChip: `<svg viewBox="0 0 48 48" width="34" height="34">
     <rect x="14" y="14" width="20" height="20" rx="2" fill="none" stroke="#FFC93C" stroke-width="2"/>
-    <text x="24" y="28" text-anchor="middle" font-size="11" font-weight="700" fill="#FFC93C" font-family="ui-monospace,monospace">AI</text>
+    <text x="24" y="28" text-anchor="middle" font-size="11" font-weight="700" fill="#FFC93C" font-family="ui-monospace,monospace">S</text>
     <line x1="14" y1="18" x2="8" y2="18" stroke="#FFC93C" stroke-width="2"/>
     <line x1="14" y1="24" x2="8" y2="24" stroke="#FFC93C" stroke-width="2"/>
     <line x1="14" y1="30" x2="8" y2="30" stroke="#FFC93C" stroke-width="2"/>
@@ -665,14 +688,14 @@ const LANGS = [
 
 const I18N = {
 en:{
-  nav_ai:"AI", nav_rigging:"Rigging", nav_steel:"Steel", nav_offshore:"Offshore",
-  screen_ai:"AI Calculator", screen_rigging:"Rigging", screen_steel:"Steel & Pipe", screen_offshore:"Offshore",
+  nav_ai:"Smart", nav_rigging:"Rigging", nav_steel:"Steel", nav_offshore:"Offshore",
+  screen_ai:"Smart Calculator", screen_rigging:"Rigging", screen_steel:"Steel & Pipe", screen_offshore:"Offshore",
   brand_sub:"Lifting & Rigging Engineering Suite",
   ai_card_title:"💬 Describe your lift",
   ai_placeholder:"e.g. 25 ton skid, 18 m radius, 4-leg sling, 60° angle, crane capacity 40 ton at radius",
   ai_default_text:"25 ton load, 4 leg sling, 60° angle",
   ai_button:"Calculate Everything ⚡",
-  ai_hint:"Not just a calculator — write your load, legs, angle, radius and crane capacity in one line. The AI works it all out in a single report.",
+  ai_hint:"Not just a calculator — write your load, legs, angle, radius and crane capacity in one line. The Smart Parser works it all out in a single report.",
   ai_tag_title:"Required Sling Rating",
   ai_tag_sub:"{legs}-leg sling @ {angle}° carrying {W} t total load",
   ai_report_title:"📊 Full Lift Report",
@@ -687,9 +710,9 @@ en:{
   ai_warnings_title:"Safety Warnings",
   ai_standards_title:"Reference Standards",
   standards_disclaimer:"Calculations are engineering estimates. Final lifting plans and equipment selection shall comply with the applicable company procedures and relevant international standards.",
-  nav_home:"Home", nav_more_calc:"More Calculators", cat_ai:"AI", cat_rigging:"RIGGING", cat_crane:"CRANE", cat_steel:"STEEL & MATERIAL", cat_offshore:"OFFSHORE",
-  feature_ai_badge:"AI Powered", feature_sci_badge:"Engineer's Choice",
-  feature_ai_desc:"Describe your lift in natural language and let AI do the rest.",
+  nav_home:"Home", nav_more_calc:"More Calculators", cat_ai:"Smart", cat_rigging:"RIGGING", cat_crane:"CRANE", cat_steel:"STEEL & MATERIAL", cat_offshore:"OFFSHORE",
+  feature_ai_badge:"Smart Parser", feature_sci_badge:"Engineer's Choice",
+  feature_ai_desc:"Describe your lift in plain text and let the Smart Parser do the rest.",
   feature_sci_desc:"Advanced calculations for engineers & professionals.",
   ai_examples_label:"Example Inputs", ai_card_subtitle:"Type in simple terms. Example inputs available.",
   ai_example2:"18 ton skid, 12 m radius, 2 leg sling, 45° angle, crane capacity 30 ton",
@@ -757,6 +780,7 @@ en:{
   report_required_shackle_title:"Required Shackle WLL", report_bow_shackle:"Bow Shackle",
   report_safety_status_title:"Safety Status",
   safety_safe_label:"SAFE", safety_caution_label:"CAUTION", safety_overload_label:"OVERLOAD",
+  footer_disclaimer:"Disclaimer: Calculations are engineering estimates for reference only. Final lift plans must be reviewed and approved by a certified Rigger or Qualified Engineer.",
   warning_angle:"Sling angle of {angle}° is below the recommended 45° minimum — leg tension rises sharply below this angle. Verify with a certified rigger.",
   warning_4leg:"4-leg slings are statically indeterminate — standard practice is to design assuming only 3 legs share the load, since even loading across all 4 legs cannot be guaranteed.",
   warning_radius_no_capacity:"Radius of {radius} m was detected but no crane rated capacity was given — add \"capacity 40 ton\" to your text to get crane utilization %.",
@@ -816,14 +840,14 @@ en:{
   calc_widget_title:"Quick Calculator", btn_scientific:"🔬 Scientific", btn_simple:"🔢 Simple", btn_scientific_calc:"Scientific Calculator"
 },
 ta:{
-  nav_ai:"AI", nav_rigging:"ரிக்கிங்", nav_steel:"ஸ்டீல்", nav_offshore:"ஆஃப்ஷோர்",
-  screen_ai:"AI கால்குலேட்டர்", screen_rigging:"ரிக்கிங்", screen_steel:"ஸ்டீல் &amp; பைப்", screen_offshore:"ஆஃப்ஷோர்",
+  nav_ai:"ஸ்மார்ட்", nav_rigging:"ரிக்கிங்", nav_steel:"ஸ்டீல்", nav_offshore:"ஆஃப்ஷோர்",
+  screen_ai:"ஸ்மார்ட் கால்குலேட்டர்", screen_rigging:"ரிக்கிங்", screen_steel:"ஸ்டீல் &amp; பைப்", screen_offshore:"ஆஃப்ஷோர்",
   brand_sub:"லிஃப்டிங் &amp; ரிக்கிங் இன்ஜினியரிங் சூட்",
   ai_card_title:"💬 உங்க லிஃப்ட்-ஐ விவரிக்கவும்",
   ai_placeholder:"உதா: 25 டன் ஸ்கிட், 18 மீ ரேடியஸ், 4-லெக் ஸ்லிங், 60° ஆங்கிள், கிரேன் கெப்பாசிட்டி 40 டன்",
   ai_default_text:"25 டன் லோட், 4 லெக் ஸ்லிங், 60° ஆங்கிள்",
   ai_button:"எல்லாத்தையும் கணக்கிடு ⚡",
-  ai_hint:"சாதாரண கால்குலேட்டர் இல்ல — load, legs, angle, radius, crane capacity எல்லாத்தையும் ஒரே வரியில் எழுதுங்க. AI அனைத்தையும் ஒரே report-ஆக தரும்.",
+  ai_hint:"சாதாரண கால்குலேட்டர் இல்ல — load, legs, angle, radius, crane capacity எல்லாத்தையும் ஒரே வரியில் எழுதுங்க. Smart Parser அனைத்தையும் ஒரே report-ஆக தரும்.",
   ai_tag_title:"தேவையான ஸ்லிங் ரேட்டிங்",
   ai_tag_sub:"{legs}-லெக் ஸ்லிங் @ {angle}°, மொத்தம் {W} டன் லோட்",
   ai_report_title:"📊 முழு லிஃப்ட் ரிப்போர்ட்",
@@ -838,9 +862,9 @@ ta:{
   ai_warnings_title:"பாதுகாப்பு எச்சரிக்கைகள்",
   ai_standards_title:"குறிப்பு தரநிலைகள்",
   standards_disclaimer:"இந்த கணக்கீடுகள் engineering estimates மட்டும். இறுதி lifting plan மற்றும் equipment selection, applicable company procedures மற்றும் தொடர்புடைய international standards-க்கு இணங்க இருக்க வேண்டும்.",
-  nav_home:"முகப்பு", nav_more_calc:"மேலும் கால்குலேட்டர்ஸ்", cat_ai:"AI", cat_rigging:"ரிக்கிங்", cat_crane:"கிரேன்", cat_steel:"ஸ்டீல் & மெட்டீரியல்", cat_offshore:"ஆஃப்ஷோர்",
-  feature_ai_badge:"AI பவர்டு", feature_sci_badge:"என்ஜினியர்ஸ் சாய்ஸ்",
-  feature_ai_desc:"உங்க லிஃப்ட்-ஐ natural language-ல் விவரிங்க, மீதி AI பார்த்துக்கும்.",
+  nav_home:"முகப்பு", nav_more_calc:"மேலும் கால்குலேட்டர்ஸ்", cat_ai:"ஸ்மார்ட்", cat_rigging:"ரிக்கிங்", cat_crane:"கிரேன்", cat_steel:"ஸ்டீல் & மெட்டீரியல்", cat_offshore:"ஆஃப்ஷோர்",
+  feature_ai_badge:"ஸ்மார்ட் பார்சர்", feature_sci_badge:"என்ஜினியர்ஸ் சாய்ஸ்",
+  feature_ai_desc:"உங்க லிஃப்ட்-ஐ simple text-ல் விவரிங்க, மீதி Smart Parser பார்த்துக்கும்.",
   feature_sci_desc:"Engineers & professionals-க்கான advanced calculations.",
   ai_examples_label:"எக்ஸாம்பிள் இன்புட்ஸ்", ai_card_subtitle:"சாதாரணமா type பண்ணுங்க. Example inputs கிடைக்கும்.",
   ai_example2:"18 டன் ஸ்கிட், 12 மீ ரேடியஸ், 2 லெக் ஸ்லிங், 45° ஆங்கிள், கிரேன் கெப்பாசிட்டி 30 டன்",
@@ -909,6 +933,7 @@ ta:{
   report_required_shackle_title:"தேவையான ஷேக்கிள் WLL", report_bow_shackle:"பௌ ஷேக்கிள்",
   report_safety_status_title:"சேஃப்டி ஸ்டேட்டஸ்",
   safety_safe_label:"சேஃப்", safety_caution_label:"காஷன்", safety_overload_label:"ஓவர்லோட்",
+  footer_disclaimer:"விதிமுறை: இந்த கணக்கீடுகள் engineering estimates மட்டும், reference-க்காக மட்டும். இறுதி lift plans-ஐ ஒரு certified Rigger அல்லது Qualified Engineer review செய்து approve பண்ணணும்.",
   warning_angle:"{angle}° ஸ்லிங் ஆங்கிள் பரிந்துரைக்கப்படும் 45° மினிமத்திற்கு கீழ் உள்ளது — இதற்கு கீழ் லெக் டென்ஷன் வேகமா அதிகரிக்கும். Certified rigger-ஆல் verify பண்ணுங்க.",
   warning_4leg:"4-லெக் ஸ்லிங்ஸ் statically indeterminate — 4 லெக்ஸிலும் சம load பகிர்வு guarantee பண்ண முடியாது, அதனால 3 லெக்ஸ் மட்டும் load பகிர்ந்துக்கும்னு design பண்றது standard practice.",
   warning_radius_no_capacity:"{radius} மீ ரேடியஸ் கண்டறியப்பட்டது, ஆனா கிரேன் rated capacity கொடுக்கல — crane utilization %-க்கு \"capacity 40 ton\" உங்க டெக்ஸ்ட்-ல சேருங்க.",
@@ -968,14 +993,14 @@ ta:{
   calc_widget_title:"குவிக் கால்குலேட்டர்", btn_scientific:"🔬 சயின்டிபிக்", btn_simple:"🔢 சிம்பிள்", btn_scientific_calc:"சயின்டிபிக் கால்குலேட்டர்"
 },
 pt:{
-  nav_ai:"IA", nav_rigging:"Amarração", nav_steel:"Aço", nav_offshore:"Offshore",
-  screen_ai:"Calculadora IA", screen_rigging:"Amarração", screen_steel:"Aço e Tubos", screen_offshore:"Offshore",
+  nav_ai:"Smart", nav_rigging:"Amarração", nav_steel:"Aço", nav_offshore:"Offshore",
+  screen_ai:"Calculadora Inteligente", screen_rigging:"Amarração", screen_steel:"Aço e Tubos", screen_offshore:"Offshore",
   brand_sub:"Suite de Engenharia de Içamento e Amarração",
   ai_card_title:"💬 Descreva o seu içamento",
   ai_placeholder:"ex: skid de 25 t, raio de 18 m, cinta de 4 pernas, ângulo de 60°, capacidade do guindaste 40 t",
   ai_default_text:"carga de 25 t, cinta de 4 pernas, ângulo de 60°",
   ai_button:"Calcular Tudo ⚡",
-  ai_hint:"Não é uma calculadora comum — escreva carga, pernas, ângulo, raio e capacidade do guindaste numa única frase. A IA calcula tudo num único relatório.",
+  ai_hint:"Não é uma calculadora comum — escreva carga, pernas, ângulo, raio e capacidade do guindaste numa única frase. O Analisador Inteligente calcula tudo num único relatório.",
   ai_tag_title:"Capacidade de Cinta Necessária",
   ai_tag_sub:"Cinta de {legs} pernas a {angle}° suportando carga total de {W} t",
   ai_report_title:"📊 Relatório Completo do Içamento",
@@ -990,9 +1015,9 @@ pt:{
   ai_warnings_title:"Avisos de Segurança",
   ai_standards_title:"Normas de Referência",
   standards_disclaimer:"Os cálculos são estimativas de engenharia. Os planos de içamento finais e a seleção de equipamentos devem cumprir os procedimentos aplicáveis da empresa e as normas internacionais relevantes.",
-  nav_home:"Início", nav_more_calc:"Mais Calculadoras", cat_ai:"IA", cat_rigging:"AMARRAÇÃO", cat_crane:"GUINDASTE", cat_steel:"AÇO E MATERIAL", cat_offshore:"OFFSHORE",
-  feature_ai_badge:"Alimentado por IA", feature_sci_badge:"Escolha do Engenheiro",
-  feature_ai_desc:"Descreva seu içamento em linguagem natural e deixe a IA fazer o resto.",
+  nav_home:"Início", nav_more_calc:"Mais Calculadoras", cat_ai:"Smart", cat_rigging:"AMARRAÇÃO", cat_crane:"GUINDASTE", cat_steel:"AÇO E MATERIAL", cat_offshore:"OFFSHORE",
+  feature_ai_badge:"Analisador Inteligente", feature_sci_badge:"Escolha do Engenheiro",
+  feature_ai_desc:"Descreva seu içamento em texto simples e deixe o Analisador Inteligente fazer o resto.",
   feature_sci_desc:"Cálculos avançados para engenheiros e profissionais.",
   ai_examples_label:"Exemplos de Entrada", ai_card_subtitle:"Digite em termos simples. Exemplos de entrada disponíveis.",
   ai_example2:"skid de 18 t, raio de 12 m, cinta de 2 pernas, ângulo de 45°, capacidade do guindaste 30 t",
@@ -1061,6 +1086,7 @@ pt:{
   report_required_shackle_title:"CMU de Manilha Necessário", report_bow_shackle:"Manilha Tipo Arco",
   report_safety_status_title:"Status de Segurança",
   safety_safe_label:"SEGURO", safety_caution_label:"CUIDADO", safety_overload_label:"SOBRECARGA",
+  footer_disclaimer:"Aviso: Os cálculos são estimativas de engenharia apenas para referência. Os planos de içamento finais devem ser revisados e aprovados por um Amarrador certificado ou Engenheiro Qualificado.",
   warning_angle:"O ângulo da cinta de {angle}° está abaixo do mínimo recomendado de 45° — a tensão na perna aumenta acentuadamente abaixo deste valor. Verifique com um amarrador certificado.",
   warning_4leg:"Cintas de 4 pernas são estaticamente indeterminadas — a prática padrão é projetar considerando que apenas 3 pernas suportam a carga, pois a distribuição uniforme entre as 4 não pode ser garantida.",
   warning_radius_no_capacity:"Foi detectado um raio de {radius} m, mas nenhuma capacidade nominal do guindaste foi informada — adicione \"capacity 40 ton\" ao texto para obter a % de utilização.",
@@ -1120,14 +1146,14 @@ pt:{
   calc_widget_title:"Calculadora Rápida", btn_scientific:"🔬 Científica", btn_simple:"🔢 Simples", btn_scientific_calc:"Calculadora Científica"
 },
 fr:{
-  nav_ai:"IA", nav_rigging:"Élingage", nav_steel:"Acier", nav_offshore:"Offshore",
-  screen_ai:"Calculateur IA", screen_rigging:"Élingage", screen_steel:"Acier et Tuyaux", screen_offshore:"Offshore",
+  nav_ai:"Smart", nav_rigging:"Élingage", nav_steel:"Acier", nav_offshore:"Offshore",
+  screen_ai:"Calculateur Intelligent", screen_rigging:"Élingage", screen_steel:"Acier et Tuyaux", screen_offshore:"Offshore",
   brand_sub:"Suite d'ingénierie de levage et d'élingage",
   ai_card_title:"💬 Décrivez votre levage",
   ai_placeholder:"ex : skid de 25 t, rayon de 18 m, élingue 4 brins, angle de 60°, capacité de grue 40 t",
   ai_default_text:"charge de 25 t, élingue 4 brins, angle de 60°",
   ai_button:"Tout Calculer ⚡",
-  ai_hint:"Pas un calculateur ordinaire — écrivez la charge, le nombre de brins, l'angle, le rayon et la capacité de la grue en une seule phrase. L'IA calcule tout dans un seul rapport.",
+  ai_hint:"Pas un calculateur ordinaire — écrivez la charge, le nombre de brins, l'angle, le rayon et la capacité de la grue en une seule phrase. L'Analyseur Intelligent calcule tout dans un seul rapport.",
   ai_tag_title:"Capacité d'Élingue Requise",
   ai_tag_sub:"Élingue {legs} brins à {angle}° portant une charge totale de {W} t",
   ai_report_title:"📊 Rapport de Levage Complet",
@@ -1142,9 +1168,9 @@ fr:{
   ai_warnings_title:"Avertissements de Sécurité",
   ai_standards_title:"Normes de Référence",
   standards_disclaimer:"Les calculs sont des estimations d'ingénierie. Les plans de levage finaux et la sélection des équipements doivent respecter les procédures applicables de l'entreprise et les normes internationales pertinentes.",
-  nav_home:"Accueil", nav_more_calc:"Plus de Calculateurs", cat_ai:"IA", cat_rigging:"ÉLINGAGE", cat_crane:"GRUE", cat_steel:"ACIER ET MATÉRIAU", cat_offshore:"OFFSHORE",
-  feature_ai_badge:"Propulsé par l'IA", feature_sci_badge:"Choix de l'Ingénieur",
-  feature_ai_desc:"Décrivez votre levage en langage naturel et laissez l'IA faire le reste.",
+  nav_home:"Accueil", nav_more_calc:"Plus de Calculateurs", cat_ai:"Smart", cat_rigging:"ÉLINGAGE", cat_crane:"GRUE", cat_steel:"ACIER ET MATÉRIAU", cat_offshore:"OFFSHORE",
+  feature_ai_badge:"Analyseur Intelligent", feature_sci_badge:"Choix de l'Ingénieur",
+  feature_ai_desc:"Décrivez votre levage en texte simple et laissez l'Analyseur Intelligent faire le reste.",
   feature_sci_desc:"Calculs avancés pour ingénieurs et professionnels.",
   ai_examples_label:"Exemples de Saisie", ai_card_subtitle:"Tapez en termes simples. Exemples de saisie disponibles.",
   ai_example2:"skid de 18 t, rayon de 12 m, élingue 2 brins, angle de 45°, capacité de grue 30 t",
@@ -1213,6 +1239,7 @@ fr:{
   report_required_shackle_title:"CMU de Manille Requise", report_bow_shackle:"Manille Lyre",
   report_safety_status_title:"État de Sécurité",
   safety_safe_label:"SÛR", safety_caution_label:"PRUDENCE", safety_overload_label:"SURCHARGE",
+  footer_disclaimer:"Avertissement : Les calculs sont des estimations d'ingénierie à titre de référence uniquement. Les plans de levage finaux doivent être examinés et approuvés par un Élingueur certifié ou un Ingénieur Qualifié.",
   warning_angle:"L'angle d'élingue de {angle}° est inférieur au minimum recommandé de 45° — la tension du brin augmente fortement en dessous de cette valeur. Vérifiez avec un élingueur certifié.",
   warning_4leg:"Les élingues à 4 brins sont statiquement indéterminées — la pratique standard consiste à concevoir en supposant que seuls 3 brins supportent la charge, car une répartition égale sur les 4 brins ne peut être garantie.",
   warning_radius_no_capacity:"Un rayon de {radius} m a été détecté mais aucune capacité nominale de grue n'a été indiquée — ajoutez « capacity 40 ton » à votre texte pour obtenir le % d'utilisation.",
@@ -1272,14 +1299,14 @@ fr:{
   calc_widget_title:"Calculatrice Rapide", btn_scientific:"🔬 Scientifique", btn_simple:"🔢 Simple", btn_scientific_calc:"Calculatrice Scientifique"
 },
 hi:{
-  nav_ai:"AI", nav_rigging:"रिगिंग", nav_steel:"स्टील", nav_offshore:"ऑफशोर",
-  screen_ai:"AI कैलकुलेटर", screen_rigging:"रिगिंग", screen_steel:"स्टील और पाइप", screen_offshore:"ऑफशोर",
+  nav_ai:"स्मार्ट", nav_rigging:"रिगिंग", nav_steel:"स्टील", nav_offshore:"ऑफशोर",
+  screen_ai:"स्मार्ट कैलकुलेटर", screen_rigging:"रिगिंग", screen_steel:"स्टील और पाइप", screen_offshore:"ऑफशोर",
   brand_sub:"लिफ्टिंग और रिगिंग इंजीनियरिंग सूट",
   ai_card_title:"💬 अपनी लिफ्ट बताइए",
   ai_placeholder:"जैसे: 25 टन स्किड, 18 मी रेडियस, 4-लेग स्लिंग, 60° एंगल, क्रेन क्षमता 40 टन",
   ai_default_text:"25 टन लोड, 4 लेग स्लिंग, 60° एंगल",
   ai_button:"सब कुछ कैलकुलेट करें ⚡",
-  ai_hint:"यह साधारण कैलकुलेटर नहीं है — लोड, लेग्स, एंगल, रेडियस और क्रेन क्षमता एक ही लाइन में लिखिए। AI सब कुछ एक ही रिपोर्ट में निकाल देगा।",
+  ai_hint:"यह साधारण कैलकुलेटर नहीं है — लोड, लेग्स, एंगल, रेडियस और क्रेन क्षमता एक ही लाइन में लिखिए। Smart Parser सब कुछ एक ही रिपोर्ट में निकाल देगा।",
   ai_tag_title:"आवश्यक स्लिंग रेटिंग",
   ai_tag_sub:"{legs}-लेग स्लिंग @ {angle}°, कुल {W} टन लोड",
   ai_report_title:"📊 पूरी लिफ्ट रिपोर्ट",
@@ -1294,9 +1321,9 @@ hi:{
   ai_warnings_title:"सुरक्षा चेतावनियाँ",
   ai_standards_title:"संदर्भ मानक",
   standards_disclaimer:"ये गणनाएं इंजीनियरिंग अनुमान हैं। अंतिम लिफ्ट प्लान और उपकरण चयन को लागू कंपनी प्रक्रियाओं और संबंधित अंतरराष्ट्रीय मानकों का पालन करना चाहिए।",
-  nav_home:"होम", nav_more_calc:"अधिक कैलकुलेटर", cat_ai:"AI", cat_rigging:"रिगिंग", cat_crane:"क्रेन", cat_steel:"स्टील और मटीरियल", cat_offshore:"ऑफशोर",
-  feature_ai_badge:"AI संचालित", feature_sci_badge:"इंजीनियर की पसंद",
-  feature_ai_desc:"अपनी लिफ्ट को साधारण भाषा में बताइए, बाकी AI कर देगा।",
+  nav_home:"होम", nav_more_calc:"अधिक कैलकुलेटर", cat_ai:"स्मार्ट", cat_rigging:"रिगिंग", cat_crane:"क्रेन", cat_steel:"स्टील और मटीरियल", cat_offshore:"ऑफशोर",
+  feature_ai_badge:"स्मार्ट पार्सर", feature_sci_badge:"इंजीनियर की पसंद",
+  feature_ai_desc:"अपनी लिफ्ट को सामान्य टेक्स्ट में बताइए, बाकी Smart Parser कर देगा।",
   feature_sci_desc:"इंजीनियरों और प्रोफेशनल्स के लिए एडवांस्ड कैलकुलेशन।",
   ai_examples_label:"उदाहरण इनपुट", ai_card_subtitle:"सरल शब्दों में टाइप करें। उदाहरण इनपुट उपलब्ध हैं।",
   ai_example2:"18 टन स्किड, 12 मी रेडियस, 2 लेग स्लिंग, 45° एंगल, क्रेन क्षमता 30 टन",
@@ -1365,6 +1392,7 @@ hi:{
   report_required_shackle_title:"आवश्यक शैकल WLL", report_bow_shackle:"बो शैकल",
   report_safety_status_title:"सेफ्टी स्टेटस",
   safety_safe_label:"सुरक्षित", safety_caution_label:"सावधानी", safety_overload_label:"ओवरलोड",
+  footer_disclaimer:"अस्वीकरण: ये गणनाएं केवल संदर्भ के लिए इंजीनियरिंग अनुमान हैं। अंतिम लिफ्ट प्लान की समीक्षा और अनुमोदन एक प्रमाणित रिगर या योग्य इंजीनियर द्वारा किया जाना चाहिए।",
   warning_angle:"{angle}° का स्लिंग एंगल अनुशंसित 45° न्यूनतम से कम है — इस एंगल से नीचे लेग टेंशन तेज़ी से बढ़ता है। किसी सर्टिफाइड रिगर से जांच करवाएं।",
   warning_4leg:"4-लेग स्लिंग स्टैटिकली इनडिटरमिनेट होते हैं — मानक प्रैक्टिस यह मानकर डिज़ाइन करना है कि केवल 3 लेग लोड शेयर करते हैं, क्योंकि सभी 4 लेग में बराबर लोडिंग की गारंटी नहीं दी जा सकती।",
   warning_radius_no_capacity:"{radius} मी रेडियस मिला लेकिन क्रेन की रेटेड क्षमता नहीं दी गई — क्रेन यूटिलाइज़ेशन % पाने के लिए अपने टेक्स्ट में \"capacity 40 ton\" जोड़ें।",
@@ -1573,6 +1601,11 @@ function setLang(id){
   renderNav();
   setScreenTitle();
   render();
+  renderFooter();
+}
+function renderFooter(){
+  const el = document.getElementById('appFooter');
+  if(el) el.textContent = '⚠️ ' + t('footer_disclaimer');
 }
 function setScreenTitle(){
   const titles = {ai:t('screen_ai'), rigging:t('screen_rigging'), steel:t('screen_steel'), offshore:t('screen_offshore'), more:t('screen_more')};
@@ -1583,10 +1616,10 @@ function setScreenTitle(){
 function renderNav(){
   const nav = document.getElementById('navbar');
   nav.innerHTML = `
-    <button class="navbtn ${state.tab==='ai'?'active':''}" onclick="setTab('ai')">
+    <button class="navbtn ${state.tab==='ai'?'active':''}" onclick="setTab('ai')" aria-label="${t('nav_home')}">
       <span class="ic">${ICONS.home}</span><span>${t('nav_home')}</span>
     </button>
-    <button class="navbtn" onclick="openDrawer()">
+    <button class="navbtn" onclick="openDrawer()" aria-label="${t('nav_more_calc')}" aria-haspopup="true">
       <span class="ic">${ICONS.grid}</span><span>${t('nav_more_calc')}</span>
     </button>`;
 }
@@ -1615,46 +1648,47 @@ function cosD(x){ return Math.cos(x*Math.PI/180); }
 function tanD(x){ return Math.tan(x*Math.PI/180); }
 
 function calcWidgetHTML(){
+  const kb = (onclick, label, content, cls) => `<div class="calc-btn ${cls||''}" onclick="${onclick}" role="button" tabindex="0" aria-label="${label}" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();${onclick}}">${content}</div>`;
   return `
-  <div class="calc-display" id="calcDisplay">${calcState.display}</div>
+  <div class="calc-display" id="calcDisplay" role="status" aria-live="polite" aria-label="Calculator display">${calcState.display}</div>
   <div class="calc-grid">
-    <div class="calc-btn fn" onclick="calcFn('sinD(')">sin</div>
-    <div class="calc-btn fn" onclick="calcFn('cosD(')">cos</div>
-    <div class="calc-btn fn" onclick="calcFn('tanD(')">tan</div>
-    <div class="calc-btn fn" onclick="calcFn('Math.sqrt(')">√</div>
-    <div class="calc-btn fn" onclick="calcFn('Math.log10(')">log</div>
-    <div class="calc-btn fn" onclick="calcFn('Math.log(')">ln</div>
-    <div class="calc-btn fn" onclick="calcSquare()">x²</div>
-    <div class="calc-btn fn" onclick="calcFn('Math.PI')">π</div>
-    <div class="calc-btn fn" onclick="calcInput('(')">(</div>
-    <div class="calc-btn fn" onclick="calcInput(')')">)</div>
-    <div class="calc-btn fn" onclick="calcFn('Math.pow(')">xʸ</div>
-    <div class="calc-btn fn" onclick="calcFn('Math.E')">e</div>
+    ${kb("calcFn('sinD(')","Sine","sin","fn")}
+    ${kb("calcFn('cosD(')","Cosine","cos","fn")}
+    ${kb("calcFn('tanD(')","Tangent","tan","fn")}
+    ${kb("calcFn('Math.sqrt(')","Square root","√","fn")}
+    ${kb("calcFn('Math.log10(')","Log base 10","log","fn")}
+    ${kb("calcFn('Math.log(')","Natural log","ln","fn")}
+    ${kb("calcSquare()","Square","x²","fn")}
+    ${kb("calcFn('Math.PI')","Pi","π","fn")}
+    ${kb("calcInput('(')","Open parenthesis","(","fn")}
+    ${kb("calcInput(')')","Close parenthesis",")","fn")}
+    ${kb("calcFn('Math.pow(')","Power","xʸ","fn")}
+    ${kb("calcFn('Math.E')","Euler's number","e","fn")}
   </div>
   <div class="calc-grid">
-    <div class="calc-btn clear" onclick="calcClear()">C</div>
-    <div class="calc-btn" onclick="calcBackspace()">⌫</div>
-    <div class="calc-btn" onclick="calcInput('%')">%</div>
-    <div class="calc-btn op" onclick="calcInput('/')">÷</div>
+    ${kb("calcClear()","Clear","C","clear")}
+    ${kb("calcBackspace()","Backspace","⌫")}
+    ${kb("calcInput('%')","Percent","%")}
+    ${kb("calcInput('/')","Divide","÷","op")}
 
-    <div class="calc-btn" onclick="calcInput('7')">7</div>
-    <div class="calc-btn" onclick="calcInput('8')">8</div>
-    <div class="calc-btn" onclick="calcInput('9')">9</div>
-    <div class="calc-btn op" onclick="calcInput('*')">×</div>
+    ${kb("calcInput('7')","Seven","7")}
+    ${kb("calcInput('8')","Eight","8")}
+    ${kb("calcInput('9')","Nine","9")}
+    ${kb("calcInput('*')","Multiply","×","op")}
 
-    <div class="calc-btn" onclick="calcInput('4')">4</div>
-    <div class="calc-btn" onclick="calcInput('5')">5</div>
-    <div class="calc-btn" onclick="calcInput('6')">6</div>
-    <div class="calc-btn op" onclick="calcInput('-')">−</div>
+    ${kb("calcInput('4')","Four","4")}
+    ${kb("calcInput('5')","Five","5")}
+    ${kb("calcInput('6')","Six","6")}
+    ${kb("calcInput('-')","Subtract","−","op")}
 
-    <div class="calc-btn" onclick="calcInput('1')">1</div>
-    <div class="calc-btn" onclick="calcInput('2')">2</div>
-    <div class="calc-btn" onclick="calcInput('3')">3</div>
-    <div class="calc-btn op" onclick="calcInput('+')">+</div>
+    ${kb("calcInput('1')","One","1")}
+    ${kb("calcInput('2')","Two","2")}
+    ${kb("calcInput('3')","Three","3")}
+    ${kb("calcInput('+')","Add","+","op")}
 
-    <div class="calc-btn wide" onclick="calcInput('0')">0</div>
-    <div class="calc-btn" onclick="calcInput('.')">.</div>
-    <div class="calc-btn eq" onclick="calcEquals()">=</div>
+    ${kb("calcInput('0')","Zero","0","wide")}
+    ${kb("calcInput('.')","Decimal point",".")}
+    ${kb("calcEquals()","Equals","=","eq")}
   </div>`;
 }
 function renderCalcWidget(){
@@ -1741,14 +1775,14 @@ function updateCharCounter(){
 function viewAI(){
   return `
   <div class="feature-row">
-    <div class="feature-card fc-ai" onclick="setTab('ai')">
+    <div class="feature-card fc-ai" onclick="setTab('ai')" role="button" tabindex="0" aria-label="${t('screen_ai')}">
       <span class="feature-badge fb-ai">✨ ${t('feature_ai_badge')}</span>
       <div class="feature-icon">${ICONS.aiChip}</div>
       <div class="feature-title">${t('screen_ai')}</div>
       <div class="feature-desc">${t('feature_ai_desc')}</div>
       <div class="feature-arrow fa-ai">→</div>
     </div>
-    <div class="feature-card fc-sci" onclick="openCalcModal()">
+    <div class="feature-card fc-sci" onclick="openCalcModal()" role="button" tabindex="0" aria-label="${t('btn_scientific_calc')}">
       <span class="feature-badge fb-sci">🔧 ${t('feature_sci_badge')}</span>
       <div class="feature-icon">${ICONS.sciCalc}</div>
       <div class="feature-title">${t('btn_scientific_calc')}</div>
@@ -1761,7 +1795,7 @@ function viewAI(){
       <div>
         <h3 style="margin-bottom:0;">${t('ai_card_title')}</h3>
       </div>
-      <button class="example-btn" onclick="toggleExampleMenu()">💡 ${t('ai_examples_label')} ▾</button>
+      <button class="example-btn" onclick="toggleExampleMenu()" aria-label="${t('ai_examples_label')}" aria-haspopup="true">💡 ${t('ai_examples_label')} ▾</button>
     </div>
     <div class="ai-card-sub">${t('ai_card_subtitle')}</div>
     <div class="example-list hidden" id="exampleList">
@@ -1769,11 +1803,11 @@ function viewAI(){
     </div>
     <div class="field">
       <div class="textarea-wrap">
-        <textarea id="aiInput" placeholder="${t('ai_placeholder')}" maxlength="300" oninput="updateCharCounter()">${t('ai_default_text')}</textarea>
+        <textarea id="aiInput" placeholder="${t('ai_placeholder')}" maxlength="300" oninput="updateCharCounter()" aria-label="${t('ai_card_title')}">${t('ai_default_text')}</textarea>
         <span class="char-counter" id="aiCharCount">${t('ai_default_text').length} / 300</span>
       </div>
     </div>
-    <button class="btn gradient" onclick="runAI()">✨ ${t('ai_button')}</button>
+    <button class="btn gradient" onclick="runAI()" aria-label="${t('ai_button')}">✨ ${t('ai_button')}</button>
     <div class="hint">${t('ai_hint')}</div>
   </div>
   <div id="aiResult"></div>
@@ -2918,6 +2952,7 @@ renderNav();
 setScreenTitle();
 render();
 runAI();
+renderFooter();
 
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
